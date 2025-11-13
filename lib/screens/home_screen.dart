@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'add_task_screen.dart';
 import '../models/task_item.dart';
+import '../utils/theme_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -41,6 +43,15 @@ class _HomeScreenState extends State<HomeScreen> {
               'My Tasks & Notes',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
+          ),
+
+          // THEME SWITCH - ADDED THIS PART
+          SwitchListTile(
+            title: const Text('Dark Mode'),
+            value: Provider.of<ThemeProvider>(context).isDarkMode,
+            onChanged: (value) {
+              Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+            },
           ),
 
           // Tasks list

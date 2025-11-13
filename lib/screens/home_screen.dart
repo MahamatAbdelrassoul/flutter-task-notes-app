@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'add_task_screen.dart';
 import '../models/task_item.dart';
 import '../utils/theme_provider.dart';
+import '../services/database_helper.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -12,21 +13,21 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Sample tasks for now - we'll replace with database later
-  List<TaskItem> tasks = [
-    TaskItem(
-      id: 1,
-      title: 'Complete Flutter Assignment',
-      priority: 'High',
-      description: 'Finish Task Notes Manager app',
-    ),
-    TaskItem(
-      id: 2,
-      title: 'Study for Exams',
-      priority: 'Medium',
-      description: 'Prepare for upcoming tests',
-    ),
-  ];
+  final DatabaseHelper _databaseHelper = DatabaseHelper();
+  List<TaskItem> _tasks = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTasks();
+  }
+
+  Future<void> _loadTasks() async {
+    final tasks = await _databaseHelper.getTasks();
+    setState(() {
+      _tasks = tasks;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // THEME SWITCH - ADDED THIS PART
+          // Theme switch
           SwitchListTile(
             title: const Text('Dark Mode'),
             value: Provider.of<ThemeProvider>(context).isDarkMode,
@@ -57,9 +58,9 @@ class _HomeScreenState extends State<HomeScreen> {
           // Tasks list
           Expanded(
             child: ListView.builder(
-              itemCount: tasks.length,
+              itemCount: _tasks.length,
               itemBuilder: (context, index) {
-                final task = tasks[index];
+                final task = _tasks[index];
                 return Card(
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   child: ListTile(
@@ -81,11 +82,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => AddTaskScreen()),
           );
+          _loadTasks(); // Reload tasks after returning from AddTaskScreen
         },
         child: const Icon(Icons.add),
       ),

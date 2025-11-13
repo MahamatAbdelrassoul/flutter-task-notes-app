@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/task_item.dart';
+import '../services/database_helper.dart';
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({Key? key}) : super(key: key);
@@ -10,6 +11,7 @@ class AddTaskScreen extends StatefulWidget {
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
   final _formKey = GlobalKey<FormState>();
+  final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   // Controllers for form fields
   final _titleController = TextEditingController();
@@ -84,7 +86,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
               // Submit button
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     // Create new task
                     final newTask = TaskItem(
@@ -93,8 +95,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       description: _descriptionController.text,
                     );
 
-                    // For now, just print and go back
-                    print('New Task: ${newTask.toJson()}');
+                    // Insert into database
+                    await _databaseHelper.insertTask(newTask);
+
+                    // Go back to home screen
                     Navigator.pop(context);
                   }
                 },

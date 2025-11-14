@@ -20,8 +20,8 @@ This is a Flutter mobile application for managing tasks and notes. Users can add
    ```bash
    git clone https://github.com/MahamatAbdelrassoul/flutter-task-notes-app.git
 2.  **Navigate to the project**
-   cd task_notes_manager
+cd task_notes_manager
 3.  **install dependencies**
-   flutter pub get
+flutter pub get
 4.  **Run the application**
-   flutter run
+flutter run
